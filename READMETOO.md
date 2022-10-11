@@ -1,6 +1,9 @@
 ## Disclamer
 We do not have access to a lab environment to test these updates. I've run tf validate, but additional errors may surface when appliying in a live environment.
 
+## What does this fork accomplish?
+The intent of this fork is to introduce paths in the repos as a new variable. The initial driver for this was being able to keep account requests for multiple AFT environments in the same repo and branch. Otherwise, a somewhat complex branching strategy is required to isolate account request HCL files and merging of code within the varied branches.
+
 ## What changed ??
 ```bash
 >
