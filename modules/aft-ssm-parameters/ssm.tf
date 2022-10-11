@@ -303,6 +303,12 @@ resource "aws_ssm_parameter" "account_request_repo_branch" {
   value = var.account_request_repo_branch
 }
 
+resource "aws_ssm_parameter" "account_request_repo_path" {
+  name  = "/aft/config/account-request/repo-path"
+  type  = "String"
+  value = var.account_request_repo_path
+}
+
 resource "aws_ssm_parameter" "global_customizations_repo_name" {
   name  = "/aft/config/global-customizations/repo-name"
   type  = "String"
@@ -313,6 +319,12 @@ resource "aws_ssm_parameter" "global_customizations_repo_branch" {
   name  = "/aft/config/global-customizations/repo-branch"
   type  = "String"
   value = var.global_customizations_repo_branch
+}
+
+resource "aws_ssm_parameter" "global_customizations_repo_path" {
+  name  = "/aft/config/global-customizations/repo-path"
+  type  = "String"
+  value = var.global_customizations_repo_path
 }
 
 resource "aws_ssm_parameter" "account_customizations_repo_name" {
@@ -327,6 +339,12 @@ resource "aws_ssm_parameter" "account_customizations_repo_branch" {
   value = var.account_customizations_repo_branch
 }
 
+resource "aws_ssm_parameter" "account_customizations_repo_path" {
+  name  = "/aft/config/account-customizations/repo-path"
+  type  = "String"
+  value = var.account_customizations_repo_path
+}
+
 resource "aws_ssm_parameter" "account_provisioning_customizations_repo_name" {
   name  = "/aft/config/account-provisioning-customizations/repo-name"
   type  = "String"
@@ -337,6 +355,12 @@ resource "aws_ssm_parameter" "account_provisioning_customizations_repo_branch" {
   name  = "/aft/config/account-provisioning-customizations/repo-branch"
   type  = "String"
   value = var.account_provisioning_customizations_repo_branch
+}
+
+resource "aws_ssm_parameter" "account_provisioning_customizations_repo_path" {
+  name  = "/aft/config/account-provisioning-customizations/repo-path"
+  type  = "String"
+  value = var.account_provisioning_customizations_repo_path
 }
 
 resource "aws_ssm_parameter" "codestar_connection_arn" {

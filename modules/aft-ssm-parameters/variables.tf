@@ -142,11 +142,19 @@ variable "account_request_repo_branch" {
   type = string
 }
 
+variable "account_request_repo_path" {
+  type = string
+}
+
 variable "account_provisioning_customizations_repo_name" {
   type = string
 }
 
 variable "account_provisioning_customizations_repo_branch" {
+  type = string
+}
+
+variable "account_provisioning_customizations_repo_path" {
   type = string
 }
 
@@ -218,11 +226,19 @@ variable "global_customizations_repo_branch" {
   type = string
 }
 
+variable "global_customizations_repo_path" {
+  type = string
+}
+
 variable "account_customizations_repo_name" {
   type = string
 }
 
 variable "account_customizations_repo_branch" {
+  type = string
+}
+
+variable "account_customizations_repo_path" {
   type = string
 }
 

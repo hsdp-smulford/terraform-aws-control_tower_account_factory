@@ -19,6 +19,7 @@ phases:
       - VENDED_EXEC_ROLE_ARN=arn:$AWS_PARTITION:iam::$VENDED_ACCOUNT_ID:role/AWSAFTExecution
       - AFT_ADMIN_ROLE_NAME=$(aws ssm get-parameter --name /aft/resources/iam/aft-administrator-role-name | jq --raw-output ".Parameter.Value")
       - AFT_ADMIN_ROLE_ARN=arn:$AWS_PARTITION:iam::$AFT_MGMT_ACCOUNT:role/$AFT_ADMIN_ROLE_NAME
+      - AFT_REPO_PATH=$(aws ssm get-parameter --name account_customizations_repo_path | jq --raw-output ".Parameter.Value")
       - ROLE_SESSION_NAME=$(aws ssm get-parameter --name /aft/resources/iam/aft-session-name | jq --raw-output ".Parameter.Value")
       - |
         CUSTOMIZATION=$(aws dynamodb get-item --table-name aft-request-metadata --key "{\"id\": {\"S\": \"$VENDED_ACCOUNT_ID\"}}" --attributes-to-get "account_customizations_name" | jq --raw-output ".Item.account_customizations_name.S")
@@ -58,16 +59,16 @@ phases:
 
           # Install AFT Python Dependencies
           python3 -m venv $DEFAULT_PATH/aft-venv
-          $DEFAULT_PATH/aft-venv/bin/pip install pip==22.1.2
-          $DEFAULT_PATH/aft-venv/bin/pip install jinja2-cli==0.7.0 Jinja2==3.0.1 MarkupSafe==2.0.1 boto3==1.18.56 requests==2.26.0
+          $DEFAULT_PATH/$AFT_REPO_PATH/aft-venv/bin/pip install pip==22.1.2
+          $DEFAULT_PATH/$AFT_REPO_PATH/aft-venv/bin/pip install jinja2-cli==0.7.0 Jinja2==3.0.1 MarkupSafe==2.0.1 boto3==1.18.56 requests==2.26.0
 
           # Install API Helper Python Dependencies
-          python3 -m venv $DEFAULT_PATH/api-helpers-venv
-          $DEFAULT_PATH/api-helpers-venv/bin/pip install -r $DEFAULT_PATH/$CUSTOMIZATION/api_helpers/python/requirements.txt
+          python3 -m venv $DEFAULT_PATH/$AFT_REPO_PATH/api-helpers-venv
+          $DEFAULT_PATH/$AFT_REPO_PATH/api-helpers-venv/bin/pip install -r $DEFAULT_PATH/$CUSTOMIZATION/api_helpers/python/requirements.txt
 
           # Mark helper scripts as executable
-          chmod +x $DEFAULT_PATH/$CUSTOMIZATION/api_helpers/pre-api-helpers.sh
-          chmod +x $DEFAULT_PATH/$CUSTOMIZATION/api_helpers/post-api-helpers.sh
+          chmod +x $DEFAULT_PATH/$AFT_REPO_PATH/$CUSTOMIZATION/api_helpers/pre-api-helpers.sh
+          chmod +x $DEFAULT_PATH/$AFT_REPO_PATH/$CUSTOMIZATION/api_helpers/post-api-helpers.sh
 
           # Generate session profiles
           chmod +x $DEFAULT_PATH/aws-aft-core-framework/sources/scripts/creds.sh
@@ -82,7 +83,7 @@ phases:
         if [[ ! -z "$CUSTOMIZATION" ]]; then 
           source $DEFAULT_PATH/api-helpers-venv/bin/activate
           export AWS_PROFILE=aft-target
-          $DEFAULT_PATH/$CUSTOMIZATION/api_helpers/pre-api-helpers.sh
+          $DEFAULT_PATH/$AFT_REPO_PATH/$CUSTOMIZATION/api_helpers/pre-api-helpers.sh
           unset AWS_PROFILE
         fi
 
@@ -92,7 +93,7 @@ phases:
       # Apply Customizations
       - |
         if [[ ! -z "$CUSTOMIZATION" ]]; then 
-          source $DEFAULT_PATH/aft-venv/bin/activate
+          source $DEFAULT_PATH/$AFT_REPO_PATH/aft-venv/bin/activate
           if [ $TF_DISTRIBUTION = "oss" ]; then
             TF_BACKEND_REGION=$(aws ssm get-parameter --name "/aft/config/oss-backend/primary-region" --query "Parameter.Value" --output text)
             TF_KMS_KEY_ID=$(aws ssm get-parameter --name "/aft/config/oss-backend/kms-key-id" --query "Parameter.Value" --output text)
@@ -108,7 +109,7 @@ phases:
             mv terraform /opt/aft/bin
             /opt/aft/bin/terraform --version
 
-            cd $DEFAULT_PATH/$CUSTOMIZATION/terraform
+            cd $DEFAULT_PATH/$AFT_REPO_PATH/$CUSTOMIZATION/terraform
             for f in *.jinja; do jinja2 $f -D timestamp="$TIMESTAMP" -D tf_distribution_type=$TF_DISTRIBUTION -D provider_region=$CT_MGMT_REGION -D region=$TF_BACKEND_REGION -D aft_admin_role_arn=$AFT_EXEC_ROLE_ARN -D target_admin_role_arn=$VENDED_EXEC_ROLE_ARN -D bucket=$TF_S3_BUCKET -D key=$TF_S3_KEY -D dynamodb_table=$TF_DDB_TABLE -D kms_key_id=$TF_KMS_KEY_ID >> ./$(basename $f .jinja).tf; done
             for f in *.tf; do echo "\n \n"; echo $f; cat $f; done
             
@@ -149,7 +150,7 @@ phases:
         fi
       - |
         if [[ ! -z "$CUSTOMIZATION" ]]; then 
-          source $DEFAULT_PATH/api-helpers-venv/bin/activate
+          source $DEFAULT_PATH/$AFT_REPO_PATH/api-helpers-venv/bin/activate
           export AWS_PROFILE=aft-target
-          $DEFAULT_PATH/$CUSTOMIZATION/api_helpers/post-api-helpers.sh
+          $DEFAULT_PATH/$AFT_REPO_PATH/$CUSTOMIZATION/api_helpers/post-api-helpers.sh
         fi

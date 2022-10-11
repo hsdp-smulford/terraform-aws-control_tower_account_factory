@@ -184,6 +184,16 @@ variable "account_request_repo_branch" {
   }
 }
 
+variable "account_request_repo_path" {
+  description = "The root path to find the terraform and scripts for account customizations"
+  type        = string
+  default     = "terraform"
+  validation {
+    condition     = length(var.account_request_repo_path) > 0
+    error_message = "Variable var: account_request_repo_path cannot be empty."
+  }
+}
+
 variable "global_customizations_repo_name" {
   description = "Repository name for the global customization files. For non-CodeCommit repos, name should be in the format of Org/Repo"
   type        = string
@@ -201,6 +211,16 @@ variable "global_customizations_repo_branch" {
   validation {
     condition     = length(var.global_customizations_repo_branch) > 0
     error_message = "Variable var: global_customizations_repo_branch cannot be empty."
+  }
+}
+
+variable "global_customizations_repo_path" {
+  description = "The root path to find the terraform and scripts for account customizations"
+  type        = string
+  default     = "terraform"
+  validation {
+    condition     = length(var.global_customizations_repo_path) > 0
+    error_message = "Variable var: global_customizations_repo_path cannot be empty."
   }
 }
 
@@ -224,6 +244,16 @@ variable "account_customizations_repo_branch" {
   }
 }
 
+variable "account_customizations_repo_path" {
+  description = "The root path to find the terraform and scripts for account customizations"
+  type        = string
+  default     = "terraform"
+  validation {
+    condition     = length(var.account_customizations_repo_path) > 0
+    error_message = "Variable var: account_customizations_repo_path cannot be empty."
+  }
+}
+
 variable "account_provisioning_customizations_repo_name" {
   description = "Repository name for the account provisioning customizations files. For non-CodeCommit repos, name should be in the format of Org/Repo"
   type        = string
@@ -241,6 +271,16 @@ variable "account_provisioning_customizations_repo_branch" {
   validation {
     condition     = length(var.account_provisioning_customizations_repo_branch) > 0
     error_message = "Variable var: account_provisioning_customizations_repo_branch cannot be empty."
+  }
+}
+
+variable "account_provisioning_customizations_repo_path" {
+  description = "The root path to find the terraform and scripts for account customizations"
+  type        = string
+  default     = "terraform"
+  validation {
+    condition     = length(var.account_provisioning_customizations_repo_path) > 0
+    error_message = "Variable var: account_provisioning_customizations_repo_path cannot be empty."
   }
 }
 
